@@ -3,17 +3,22 @@ library(scales)
 library(reshape)
 library(dplyr)
 
-#imd_maitri=imd_maitri[,c("obstime", "tempr", "rh", "ws", "wd", "ap")]
-#sankalp_sase=sankalp_sase[,c("obstime", "tempr", "rh", "ws", "wd", "ap")]
+imd_maitri=imd_maitri[,c("obstime", "tempr", "rh", "ws", "wd", "ap")]
+sankalp_sase=sankalp_sase[,c("obstime", "tempr", "rh", "ws", "wd", "ap")]
 
 station = c("iig_bharati", "iig_maitri", "imd_maitri", "sankalp_sase", "dozer")
 duration = c("(2012-2016)", "(2012-2015)", "(1985-2016)", "(2006-2015)", "(2007-2015)")
 
 input = c(0,"0000")
+parameter=c("Y", "Y", "Y", "Y")
 inputter = function(station, duration, input, iig_bharati, iig_maitri, imd_maitri, sankalp_sase, dozer_cleaned) {
   input[1] = readline(prompt = "1. iig_bharati 2. iig_maitri 3. imd_maitri 4. sankalp_sase. 5. dozer. Choice: ")
   stn = as.integer(input[1])
   input[2]=readline(prompt=paste("Enter Year for ", station[stn], duration[stn], " : "))
+  parameter[1]=readline(prompt="Temperature(Y/N) : ")
+  parameter[2]=readline(prompt="Humidity(Y/N) : ")
+  parameter[3]=readline(prompt="Wind Speed(Y/N) : ")
+  parameter[4]=readline(prompt="Air Pressure(Y/N) : ")
   if(input[1] == 1) {
     subs = iig_bharati
   } else
@@ -40,6 +45,18 @@ inputter = function(station, duration, input, iig_bharati, iig_maitri, imd_maitr
   subs$time_only=as.POSIXct(subs$time_only)
   subs=subs[,-c(1,5)]
   names(subs)=c("Temperature(Degree Celsius)", "Humidity", "Wind Speed(knots)", "Air Pressure", "time_only")
+  if(parameter[4]=="N") {
+    subs = subs[,-c(4)] 
+  }
+  if(parameter[3]=="N") {
+    subs = subs[,-c(3)]
+  }
+  if(parameter[2]=="N") {
+    subs = subs[,-c(2)]
+  }
+  if(parameter[1]=="N") {
+    subs = subs[,-c(1)]
+  }
   dat.m <- melt(subs, "time_only")
   names(dat.m)=c("Months", "variable", "value")
   plotter = ggplot(dat.m, aes(Months, value, colour = variable,group==1)) + geom_line() +
