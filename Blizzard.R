@@ -15,7 +15,7 @@ for (i in 1:nrow(mytable)) {
   else if(mytable$ws[i] > 16.2) {
     mytable$bliz[i] = 1
     }
-}
+} #Hello
 
 mytable$bliz1 = mytable$bliz
 for (i in 2:nrow(mytable)) {
