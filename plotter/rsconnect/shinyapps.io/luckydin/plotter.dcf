@@ -1,0 +1,10 @@
+name: plotter
+title:
+username:
+account: luckydin
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 358687
+bundleId: 1422178
+url: https://luckydin.shinyapps.io/plotter/
+when: 1528698227.36607
