@@ -29,17 +29,13 @@ ui <- fluidPage(
   ),
   mainPanel(
     h2("Time Series Plot\n"),
-    plotOutput("view"),
-    verbatimTextOutput("d")
+    plotOutput("view")
   )
 )
 #server=function(input,output){}
 
 server <- function(input, output) {
   observeEvent(input$submit, {
-    output$d = renderText({
-      paste(input$choice, typeof(input$choice), input$valtempr, input$valrh, input$date1)
-    })
     output$view = renderPlot({
       inputter(input$date1, input$date2, input$valtempr, input$valrh, input$valws, input$valap, input$choice)
     })
