@@ -5,7 +5,7 @@ library(reshape2)
 library(dplyr)
 
 #source("queplot.R")
-source("Parameters-all data sources.R")
+source("Parameters.R")
 
 ui <- fluidPage(
   titlePanel("Plots"),
