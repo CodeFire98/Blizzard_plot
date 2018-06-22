@@ -10,6 +10,7 @@ source("Parameters.R")
 ui <- fluidPage(
   titlePanel("Plots"),
   sidebarPanel(
+    h3("Data Sources:"),
     radioButtons("choice", "Select a Data Source:", 
                  c("IIG_Bharati (2012-2016)"="iigb",
                    "IIG_Maitri (2012-2015)"="iigm",
@@ -28,18 +29,21 @@ ui <- fluidPage(
   ),
   mainPanel(
     h2("Time Series Plot\n"),
-    plotOutput("view")
+    plotOutput("view"),
+    verbatimTextOutput("d")
   )
 )
-server=function(input,output){}
+#server=function(input,output){}
 
 server <- function(input, output) {
   observeEvent(input$submit, {
-      output$view = renderPlot({
-      inputter(input$date1, input$date2, input$valtempr, input$valrh, input$valws, input$valap, input$iigb, input$iigm, input$imdm, input$ssase, input$dozer)
+    output$d = renderText({
+      paste(input$choice, typeof(input$choice), input$valtempr, input$valrh, input$date1)
+    })
+    output$view = renderPlot({
+      inputter(input$date1, input$date2, input$valtempr, input$valrh, input$valws, input$valap, input$choice)
     })
   })
 }
 
 shinyApp(ui, server)
-

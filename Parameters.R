@@ -3,33 +3,34 @@
 
 #station = c("iig_bharati", "iig_maitri", "imd_maitri", "sankalp_sase", "dozer")
 #stn=1
+#subs=iig_bharati
 
-inputter = function(date1, date2, valtempr, valrh, valws, valap, iigb, iigm, imdm, ssase, dozer) {
+inputter = function(date1, date2, valtempr, valrh, valws, valap, choice) {
   station = c("iig_bharati", "iig_maitri", "imd_maitri", "sankalp_sase", "dozer")
   stn=1
-  if(iigb) {
+  if(choice=="iigb") {
     subs = iig_bharati
     stn=1
   } else
-    if(iigm) {
+    if(choice=="iigm") {
       subs = iig_maitri
       stn=2
     } else
-      if(imdm) {
+      if(choice=="imdm") {
         imd_maitri=imd_maitri[,c("obstime", "tempr", "rh", "ws", "wd", "ap")]
         subs = imd_maitri
         stn=3
       } else
-        if(ssase) {
+        if(choice=="ssase") {
           sankalp_sase=sankalp_sase[,c("obstime", "tempr", "rh", "ws", "wd", "ap")]
           subs = sankalp_sase
           stn=4
         } else
-          if(dozer) {
+          if(choice=="dozer") {
             subs = dozer_cleaned
             stn=5
           } 
-  if(dozer)
+  if(choice=="dozer")
   {
     subs$time_only=strptime(subs$obstime, format="%d/%m/%Y %H:%M")
   } else
@@ -52,9 +53,10 @@ inputter = function(date1, date2, valtempr, valrh, valws, valap, iigb, iigm, imd
   if(!valtempr) {
     subs = subs[,-c(1)]
   }
-  dat.m <- melt(subs, "time_only")
-  names(dat.m)=c("Time", "variable", "value")
-  plotter = ggplot(dat.m, aes(Time, value, colour = variable,group==1)) + geom_line() +
+  subs$grp=factor(c(0, cumsum(diff(subs$time_only)>1)))
+  dat.m=melt(as.data.frame(subs), id.vars=c("time_only", "grp"))
+  names(dat.m)=c("Months", "Group", "variable", "value")
+  plotter = ggplot(dat.m, aes(Months, value, colour = variable,group==1)) + geom_line(aes(group=Group)) +
     facet_wrap(~ variable, ncol = 1, scales = "free_y")+
     scale_x_datetime(date_breaks = "1 month", labels = date_format("%b")) +
     theme(axis.text.x = element_text(angle = 90, vjust = 1.0, hjust = 1.0)) +
