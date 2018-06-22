@@ -18,8 +18,26 @@ ui <- fluidPage(
                    "Sankalp_Sase (2006-2015)"="ssase",
                    "Dozer_Sase (2007-2015)"="dozer")),
     h3("Enter Dates:"),
-    dateInput("date1", "Start Date"),
-    dateInput("date2", "End Date"),
+    conditionalPanel(
+      condition = "input.choice == 'iigb'",
+      dateRangeInput("date", "Input Date", start = "2012-01-28", end = "2012-01-28", min = "2012-01-28", max = "2016-12-31")
+    ),
+    conditionalPanel(
+      condition = "input.choice == 'iigm'",
+      dateRangeInput("date", "Input Date", start = "2012-01-01", end = "2012-01-01", min = "2012-01-01", max = "2015-12-31")
+    ),
+    conditionalPanel(
+      condition = "input.choice == 'imdm'",
+      dateRangeInput("date", "Input Date", start = "1985-01-01", end = "1985-01-01", min = "1985-01-01", max = "2016-12-19")
+    ),
+    conditionalPanel(
+      condition = "input.choice == 'ssase'",
+      dateRangeInput("date", "Input Date", start = "2006-02-23", end = "2006-02-23", min = "2006-02-23", max = "2016-12-31")
+    ),
+    conditionalPanel(
+      condition = "input.choice == 'dozer'",
+      dateRangeInput("date", "Input Date", start = "2007-03-01", end = "2007-03-01", min = "2007-03-01", max = "2015-11-15")
+    ),
     h3("Parameters:"),
     checkboxInput('valtempr', 'Temperature', FALSE),
     checkboxInput('valrh', 'Humidity', FALSE),
@@ -37,7 +55,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   observeEvent(input$submit, {
     output$view = renderPlot({
-      inputter(input$date1, input$date2, input$valtempr, input$valrh, input$valws, input$valap, input$choice)
+      inputter(input$date, input$valtempr, input$valrh, input$valws, input$valap, input$choice)
     })
   })
 }

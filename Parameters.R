@@ -5,7 +5,7 @@
 #stn=1
 #subs=iig_bharati
 
-inputter = function(date1, date2, valtempr, valrh, valws, valap, choice) {
+inputter = function(date, valtempr, valrh, valws, valap, choice) {
   station = c("iig_bharati", "iig_maitri", "imd_maitri", "sankalp_sase", "dozer")
   stn=1
   if(choice=="iigb") {
@@ -37,7 +37,7 @@ inputter = function(date1, date2, valtempr, valrh, valws, valap, choice) {
   {
     subs$time_only=strptime(subs$obstime, format="%m/%d/%Y %H:%M")
   }
-  subs = subset(subs, as.character(as.Date(subs$time_only, "%Y-%m-%d"))>=date1 & as.character(as.Date(subs$time_only, "%Y-%m-%d"))<=date2 & ap>900 & ws<1000)
+  subs = subset(subs, as.character(as.Date(subs$time_only, "%Y-%m-%d"))>=date[1] & as.character(as.Date(subs$time_only, "%Y-%m-%d"))<=date[2] & ap>900 & ws<1000)
   subs$time_only=as.POSIXct(subs$time_only)
   subs=subs[,-c(1,5)]
   names(subs)=c("Temperature(Degree Celsius)", "Humidity", "Wind Speed(knots)", "Air Pressure", "time_only")
@@ -60,7 +60,7 @@ inputter = function(date1, date2, valtempr, valrh, valws, valap, choice) {
     facet_wrap(~ variable, ncol = 1, scales = "free_y")+
     scale_x_datetime(date_breaks = "1 month", labels = date_format("%b")) +
     theme(axis.text.x = element_text(angle = 90, vjust = 1.0, hjust = 1.0)) +
-    ggtitle(paste(station[stn], date1, "TO", date2))+
+    ggtitle(paste(station[stn], date[1], "TO", date[2]))+
     theme(plot.title = element_text(family = "Aileron", color="blue", face="bold", size=15, hjust=0))+
     theme(axis.title = element_text(family = "Aileron", color="red", face="bold", size=12))+
     theme(plot.title = element_text(hjust = 0.5))+
