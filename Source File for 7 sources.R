@@ -1,17 +1,12 @@
+source("db_comm.R")
+
 inputter = function(choice, choice1, choice2, valtemprb, valrhb, valwsb, valapb, valtemprant, valwsant, valmslpant, valtempr, valrh, valws, valap, date1, date2, date3, date4, date5, date6, date7) {
-  library(shiny)
   library(ggplot2)
   library(scales)
   library(reshape2)
   library(dplyr)
   library(zoo)
-  require("RPostgreSQL")
-  require("RPostgres")
-  require("DBI")
-  drv <- dbDriver("PostgreSQL")
-  con=dbConnect(drv, dbname = "postgres",
-                host = "localhost", port = 9876,
-                user = "postgres", password = "ncaor@123")
+  con = dbcon("Lakshith1", "localhost", 5444, "postgres", "ncaor@123")
   station = c("IIG_Bharati", "IMD_Bharati", "IIG_Maitri", "IMD_Maitri", "Sankalp_SASE Maitri", "Dozer_SASE Maitri", "Surface Data Maitri")
   date=c(0,"00")
   stn=1
@@ -159,5 +154,6 @@ inputter = function(choice, choice1, choice2, valtemprb, valrhb, valwsb, valapb,
       theme(plot.background = element_rect(fill = "#fafafa"))+
       theme(strip.text.x = element_text(colour = "red", size = 15,hjust = 0.5, vjust = 0.5))
   } 
+  dbdiscon(con)
   return(plotter)
 }

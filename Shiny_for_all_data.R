@@ -1,12 +1,7 @@
 library(shiny)
-library(ggplot2)
-library(scales)
-library(reshape2)
-library(dplyr)
-library(zoo)
 
-#source("queplot.R")
 source("Source File for 7 sources.R")
+source("db_comm.R")
 
 ui <- fluidPage(
   titlePanel("Plots"),
