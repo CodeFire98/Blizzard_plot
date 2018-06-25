@@ -3,46 +3,81 @@ library(ggplot2)
 library(scales)
 library(reshape2)
 library(dplyr)
+library(zoo)
 
 #source("queplot.R")
-source("Parameters.R")
+source("Source File for 7 sources.R")
 
 ui <- fluidPage(
   titlePanel("Plots"),
   sidebarPanel(
+    h3("Stations:"),
+    radioButtons("choice", "Select a Station:", 
+                 c("Bharati"="b",
+                   "Maitri"="m")),
     h3("Data Sources:"),
-    radioButtons("choice", "Select a Data Source:", 
-                 c("IIG_Bharati (2012-2016)"="iigb",
-                   "IIG_Maitri (2012-2015)"="iigm",
-                   "IMD_Maitri (1985-2016)"="imdm",
-                   "Sankalp_Sase (2006-2015)"="ssase",
-                   "Dozer_Sase (2007-2015)"="dozer")),
-    h3("Enter Dates:"),
     conditionalPanel(
-      condition = "input.choice == 'iigb'",
-      dateRangeInput("date", "Input Date", start = "2012-01-28", end = "2012-01-28", min = "2012-01-28", max = "2016-12-31")
+      condition = "input.choice == 'b'",
+      radioButtons("choice1", "Select the Data Source:", 
+                   c("IIG"="iigb",
+                     "IMD"="imdb")),
+      h3("Enter Dates:"),
+      conditionalPanel(
+        condition = "input.choice1 == 'iigb'",
+        dateRangeInput("date1", "Input Date", start = "2012-01-28", end = "2016-12-31", min = "2012-01-28", max = "2016-12-31")
+      ),
+      conditionalPanel(
+        condition = "input.choice1 == 'imdb'",
+        dateRangeInput("date2", "Input Date", start = "2012-02-06", end = "2016-11-13", min = "2012-02-06", max = "2016-11-13")
+      ),
+      h3("Parameters:"),
+      checkboxInput('valtemprb', 'Temperature', FALSE),
+      checkboxInput('valrhb', 'Humidity', FALSE),
+      checkboxInput('valwsb', 'Wind Speed', FALSE),
+      checkboxInput('valapb', 'Air Pressure', FALSE)
     ),
     conditionalPanel(
-      condition = "input.choice == 'iigm'",
-      dateRangeInput("date", "Input Date", start = "2012-01-01", end = "2012-01-01", min = "2012-01-01", max = "2015-12-31")
+      condition = "input.choice == 'm'",
+      radioButtons("choice2", "Select the Data Source:", 
+                   c("IIG"="iigm",
+                     "IMD"="imdm",
+                     "Sankalp SASE"="ssasem",
+                     "Dozer SASE"="dozerm",
+                     "Surface Data"="ant_tb3m")),
+      h3("Enter Dates:"),
+      conditionalPanel(
+        condition = "input.choice2 == 'iigm'",
+        dateRangeInput("date3", "Input Date", start = "2012-01-01", end = "2015-12-31", min = "2012-01-01", max = "2015-12-31")
+      ),
+      conditionalPanel(
+        condition = "input.choice2 == 'imdm'",
+        dateRangeInput("date4", "Input Date", start = "1985-01-01", end = "2016-12-19", min = "1985-01-01", max = "2016-12-19")
+      ),
+      conditionalPanel(
+        condition = "input.choice2 == 'ssasem'",
+        dateRangeInput("date5", "Input Date", start = "2006-02-23", end = "2016-12-31", min = "2006-02-23", max = "2016-12-31")
+      ),
+      conditionalPanel(
+        condition = "input.choice2 == 'dozerm'",
+        dateRangeInput("date6", "Input Date", start = "2007-03-01", end = "2015-11-15", min = "2007-03-01", max = "2015-11-15")
+      ),
+      conditionalPanel(
+        condition = "input.choice2 == 'ant_tb3m'",
+        dateRangeInput("date7", "Input Date", start = "1985-02-26", end = "2010-12-31", min = "1985-02-26", max = "2010-12-31"),
+        h3("Parameters:"),
+        checkboxInput('valtemprant', 'Temperature', FALSE),
+        checkboxInput('valwsant', 'Wind Speed', FALSE),
+        checkboxInput('valmslpant', 'Mean Sea Level Pressure', FALSE)
+      ),
+      conditionalPanel( 
+        condition = "input.choice2 != 'ant_tb3m'",
+        h3("Parameters:"),
+        checkboxInput('valtempr', 'Temperature', FALSE),
+        checkboxInput('valrh', 'Humidity', FALSE),
+        checkboxInput('valws', 'Wind Speed', FALSE),
+        checkboxInput('valap', 'Air Pressure', FALSE)
+      )
     ),
-    conditionalPanel(
-      condition = "input.choice == 'imdm'",
-      dateRangeInput("date", "Input Date", start = "1985-01-01", end = "1985-01-01", min = "1985-01-01", max = "2016-12-19")
-    ),
-    conditionalPanel(
-      condition = "input.choice == 'ssase'",
-      dateRangeInput("date", "Input Date", start = "2006-02-23", end = "2006-02-23", min = "2006-02-23", max = "2016-12-31")
-    ),
-    conditionalPanel(
-      condition = "input.choice == 'dozer'",
-      dateRangeInput("date", "Input Date", start = "2007-03-01", end = "2007-03-01", min = "2007-03-01", max = "2015-11-15")
-    ),
-    h3("Parameters:"),
-    checkboxInput('valtempr', 'Temperature', FALSE),
-    checkboxInput('valrh', 'Humidity', FALSE),
-    checkboxInput('valws', 'Wind Speed', FALSE),
-    checkboxInput('valap', 'Air Pressure', FALSE),
     actionButton("submit","Submit")
   ),
   mainPanel(
@@ -50,14 +85,14 @@ ui <- fluidPage(
     plotOutput("view")
   )
 )
-#server=function(input,output){}
 
 server <- function(input, output) {
   observeEvent(input$submit, {
     output$view = renderPlot({
-      inputter(input$date, input$valtempr, input$valrh, input$valws, input$valap, input$choice)
+      inputter(input$choice, input$choice1, input$choice2, input$valtemprb, input$valrhb, input$valwsb, input$valapb, input$valtemprant, input$valwsant, input$valmslpant, input$valtempr, input$valrh, input$valws, input$valap, input$date1, input$date2, input$date3, input$date4, input$date5, input$date6, input$date7)
     })
   })
+  
 }
 
 shinyApp(ui, server)
