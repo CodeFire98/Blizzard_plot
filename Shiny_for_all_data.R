@@ -1,10 +1,10 @@
 library(shiny)
 
-source("Source File for 7 sources.R")
+source("Source File for 7 sources trial.R")
 source("db_comm.R")
 
 ui <- fluidPage(
-  titlePanel("Plots"),
+  headerPanel("Plots"),
   sidebarPanel(
     h3("Stations:"),
     radioButtons("choice", "Select a Station:", 

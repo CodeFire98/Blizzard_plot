@@ -21,7 +21,7 @@ inputter = function(choice, choice1, choice2, valtemprb, valrhb, valwsb, valapb,
       {
         imd_bharati = dbReadTable(con, "imd_bharati")
         imd_bharati=imd_bharati[,c("obstime", "tempr", "rh", "ws", "wd", "ap")]
-        subs = imd_bharati
+        subs = dbReadTable(con, "imd_bharati")
         stn=2
         date=date2
       } 
@@ -31,55 +31,55 @@ inputter = function(choice, choice1, choice2, valtemprb, valrhb, valwsb, valapb,
         subs = dbReadTable(con, "iig_maitri")
         stn=3
         date=date3
-        } else
-          if(choice2=="imdm") {
-            imd_maitri = dbReadTable(con, "imd_maitri")
-            imd_maitri=imd_maitri[,c("obstime", "tempr", "rh", "ws", "wd", "ap")]
-            subs = imd_maitri
-            stn=4
-            date=date4
-            } else
-              if(choice2=="ssasem") {
-                sankalp_sase = dbReadTable(con, "Sankalp_SASE")
-                sankalp_sase=sankalp_sase[,c("obstime", "tempr", "rh", "ws", "wd", "ap")]
-                subs = sankalp_sase
-                stn=5
-                date=date5
-                } else
-                  if(choice2=="dozerm") {
-                    subs = dbReadTable(con, "dozer")
-                    stn=6
-                    date=date6
-                    } else
-                      if(choice2=="ant_tb3m") {
-                        subs = dbReadTable(con, "Surface_Data")       
-                        stn=7
-                        date=date7
-                        subs$time_only=strptime(paste(subs$YEAR,"-",subs$MN,"-",subs$DT," ",subs$HR,":00:00"), "%Y - %m - %d %H :%M:%S")
-                        subs = subset(subs, as.character(as.Date(subs$time_only, "%Y-%m-%d"))>=date[1] & as.character(as.Date(subs$time_only, "%Y-%m-%d"))<=date[2]) 
-                        subs=subset(subs, MSLP<1033 & MSLP>940 & WS<60 & MSLP>940)
-                        subs$tempr=subs$DBT
-                        subs$ws=subs$WS
-                        subs$mslp=subs$MSLP
-                        subs=subs[-c(1:18)]
-                        subs$temprm = rollmean(subs$tempr, k=8, fill=NA)
-                        subs$wsm = rollmean(subs$ws, k=8, fill=NA)
-                        subs$mslpm = rollmean(subs$mslp, k=8, fill=NA)
-                        subs = subs[,-c(2,3,4)]
-                        subs = subset(subs, format(time_only, "%H:%M:%S") == "12:00:00")
-                        subs$time_only=as.POSIXct(subs$time_only)
-                        names(subs)<-c("time_only","Temperature", "Wind Speed", "Mean Sea Level Pressure")
-                        subs$grp=factor(c(0, cumsum(diff(subs$time_only)>3)))
-                        if(!valmslpant) {
-                          subs = subs[,-c(4)] 
-                        }
-                        if(!valwsant) {
-                          subs = subs[,-c(3)]
-                        }
-                        if(!valtemprant) {
-                          subs = subs[,-c(2)]
-                        }
-                      }
+      } else
+      if(choice2=="imdm") {
+        imd_maitri = dbReadTable(con, "imd_maitri")
+        imd_maitri=imd_maitri[,c("obstime", "tempr", "rh", "ws", "wd", "ap")]
+        subs = imd_maitri
+        stn=4
+        date=date4
+      } else
+      if(choice2=="ssasem") {
+        sankalp_sase = dbReadTable(con, "Sankalp_SASE")
+        sankalp_sase=sankalp_sase[,c("obstime", "tempr", "rh", "ws", "wd", "ap")]
+        subs = sankalp_sase
+        stn=5
+        date=date5
+      } else
+      if(choice2=="dozerm") {
+        subs = dbReadTable(con, "dozer")
+        stn=6
+        date=date6
+      } else
+      if(choice2=="ant_tb3m") {
+        subs = dbReadTable(con, "Surface_Data")       
+        stn=7
+        date=date7
+        subs$time_only=strptime(paste(subs$YEAR,"-",subs$MN,"-",subs$DT," ",subs$HR,":00:00"), "%Y - %m - %d %H :%M:%S")
+        subs = subset(subs, as.character(as.Date(subs$time_only, "%Y-%m-%d"))>=date[1] & as.character(as.Date(subs$time_only, "%Y-%m-%d"))<=date[2]) 
+        subs=subset(subs, MSLP<1033 & MSLP>940 & WS<60 & MSLP>940)
+        subs$tempr=subs$DBT
+        subs$ws=subs$WS
+        subs$mslp=subs$MSLP
+        subs=subs[-c(1:18)]
+        subs$temprm = rollmean(subs$tempr, k=8, fill=NA)
+        subs$wsm = rollmean(subs$ws, k=8, fill=NA)
+        subs$mslpm = rollmean(subs$mslp, k=8, fill=NA)
+        subs = subs[,-c(2,3,4)]
+        subs = subset(subs, format(time_only, "%H:%M:%S") == "12:00:00")
+        subs$time_only=as.POSIXct(subs$time_only)
+        names(subs)<-c("time_only","Temperature", "Wind Speed", "Mean Sea Level Pressure")
+        subs$grp=factor(c(0, cumsum(diff(subs$time_only)>3)))
+        if(!valmslpant) {
+          subs = subs[,-c(4)] 
+        }
+        if(!valwsant) {
+          subs = subs[,-c(3)]
+        }
+        if(!valtemprant) {
+          subs = subs[,-c(2)]
+        }
+      }
     }
   if(choice2!="ant_tb3m") {
     if(choice2 == "dozerm") {
